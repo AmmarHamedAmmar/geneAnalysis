@@ -54,10 +54,27 @@ function(file) {
 }
 
 
+function(file) {
+  file <- unlist(file)
+  formattedfile <- do.call(rbind, type.convert(strsplit(file, "\n"), as.is = TRUE))
+  mdat <- matrix(formattedfile, byrow = TRUE)
+  formatted_matrix <- do.call(rbind, type.convert(strsplit(mdat, ","), as.is = TRUE))
+  
+  #generate random unique name for the file 
+  randomString <- stri_rand_strings(1 , 10 , pattern = "[A-Za-z0-9]")
+  string1 <- randomString
+  string2 <- "_popGene.csv"
+  fileName <- paste(string1, string2, sep ="")
+  
+  # Write the CSV file to the disk
+  write.csv(formatted_matrix, file.path(getwd(), fileName), row.names = FALSE , col.names = FALSE)
+  file.path(getwd(), fileName)
+}
 #* Accept a CSV file through a POST request and write it to the disk
 #* @param file:file
 #* @post /upload
 function(file) {
+  
   
   file <- unlist(file)
   formattedfile <- do.call(rbind, type.convert(strsplit(file, "\n"), as.is = TRUE))
@@ -79,6 +96,8 @@ function(file) {
   lobster_wide = reshape(lobster, idvar = c("ID","Site"), timevar = "Locus", direction = "wide", sep = "")
   ind = as.character(lobster_wide$ID) # individual ID
   site = as.character(lobster_wide$Site) # site ID
+  snpgeno = lobster_wide[ , 3:ncol(lobster_wide)]
+  
   lobster_gen = df2genind(snpgeno, ploidy = 2, ind.names = ind, pop = site, sep = "")
   
   # number of alles 
@@ -93,10 +112,18 @@ function(file) {
   #  Allele freq 
   tab(lobster_gen)[1:5, 1:10]
   typeof(tab(lobster_gen)[1:5, 1:10])
-  #write alle freq in the file 
   
+  #write alle freq in the file 
   geneIdDF<- melt(as.matrix(lobster_gen)[1:5, 1:10])
   
+  
+  
+  #genetic distance 
+  genPop_lob <- genind2genpop(lobster_gen)
+  
+  genetic_Distance <- dist.genpop(genPop_lob) 
+  
+  gen_Distance_DF <- melt(as.matrix(genetic_Distance) ) 
   
   
   
@@ -134,7 +161,7 @@ function(file) {
     Layout = "autofit"
     
   )
-  t1 <- flextable(df)
+  gen_distance <- flextable(gen_Distance_DF)
   t2 <-flextable(geneIdDF) 
   flex_numOfAlle <- flextable(numOfAlleDF) 
   felx_HW_DF <- flextable(HW_DF)
@@ -148,7 +175,7 @@ function(file) {
   string2 <- "_popGene.docx"
   fileName <- paste(string1, string2, sep ="")
   
-  save_as_docx(`genetic distances table ` = t1 , 
+  save_as_docx(`genetic distances table ` = gen_distance , 
                `alle freq table`  = t2 , 
                `alle number table`  = flex_numOfAlle  ,
                `HW Test Table ` = felx_HW_DF,
@@ -161,7 +188,6 @@ function(file) {
   vec <- cbind(string3, string4 , fileName) # combined vector.
   pathToFile <- paste(string3, string4 , fileName, sep ="")
   pathToFile
-  
 }
 
 # Programmatically alter your API
