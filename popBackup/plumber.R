@@ -6,7 +6,6 @@
 #
 #    https://www.rplumber.io/
 #
-setwd("D:/grad/popgene/src/PopGeneApi")
 library(plumber)
 library(adegenet)
 library(poppr)
