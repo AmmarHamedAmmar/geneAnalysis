@@ -14,6 +14,7 @@ library(Rook)
 library (plyr)
 library (jsonlite)
 library(stringi)
+library(officer)
 
 
 library(kableExtra)
@@ -78,6 +79,7 @@ gen_Distance_DF <- melt(as.matrix(genetic_Distance) )
 
 # HW Test works on geneid  ,
 hwTest<- hw.test(lobster_gen , B = 0 ) 
+na.omit( ,  replace=0)
 
 HW_DF<- melt(as.matrix(hwTest) ) 
 
@@ -136,4 +138,9 @@ string3 <- getwd()
 string4 <- "/"
 vec <- cbind(string3, string4 , fileName) # combined vector.
 pathToFile <- paste(string3, string4 , fileName, sep ="")
-pathToFile
+
+doc <- read_docx("D:/grad/popgene/src/PopGeneApi/2Rx6ByTBlU_popGene.docx")
+text <- docx_summary(doc)
+
+
+

@@ -1,14 +1,18 @@
 
-install.packages(c("adegenet", "poppr", "dplyr", "hierfstat", "reshape2", "ggplot2", "RColorBrewer", "scales", "kableExtra", "data.table", "magic", "flextable", "pegas"))
-install.packages("haplo.stats")
-install.packages("trio")
-install.packages("arsenal")
-install.packages("readxl")
+
+# Detach the adegenet package from the R session
+detach("package:adegenet", unload=TRUE)
+
+# Install the adegenet package
+install.packages("adegenet")
+
+
+
 # Load the haplo.stats package
 library(haplo.stats)
 library(trio)
 library(readxl)
-
+library(adegenet)
 ls(name="package:haplo.stats")
 help(haplo.em)
 
@@ -16,25 +20,22 @@ if (!require("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 BiocManager::install("trio")
 
-
-
-geno2<- read.csv("D:/grad/Haploviewd/GH_Dokki-Mandara.xlsx")
-lobster = read.csv("D:/grad/popgene/Lobster_SNP_Genotypes.csv")
-# Read in the genetic data as a haplo.stats "geno" object
-geno <- read.pedfile("D:/grad/Haploviewd/SNP_Dokki.ped")
-# Read in the genetic data as a haplo.stats "geno" object
-geno <- read.pedfile(file = "D:/grad/Haploviewd/SNP_Dokki.txt")
-
-
 # Read in the genetic data as a haplo.stats "geno" object
 geno <- read_excel("D:/grad/Haploview/GH_Dokki-Mandara.xlsx")
 geno2 <- read_xls("D:/grad/Haploview/Haploview-input_N_Ansari-Pour.xls")
-typeof(geno2)
 
-haplo_data <- haplo.em(geno2)
+
+
+num.el <- sapply(geno2, length)
+# Generate the matrix
+res <- cbind(unlist(geno2), rep(1:length(geno2), num.el))
+haplo_data <- haplo.em(res )
 
 # Perform haplotype analysis using the EM algorithm
 hap_em <- haplo.em(geno)
+
+
+
 # Print the haplotype frequencies
 print(hap_em$frequencies)
 # Perform haplotype association testing using the score test

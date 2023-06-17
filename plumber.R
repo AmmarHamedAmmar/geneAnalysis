@@ -20,7 +20,7 @@ library(Rook)
 library (plyr)
 library (jsonlite)
 library(stringi)
-
+library(officer)
 
 library(kableExtra)
 library( data.table )
@@ -42,16 +42,66 @@ cors <- function(res) {
 }
 
 
-#* @serializer csv
-#* @post /csv
-#* @param file:file
-function(file) {
-  file
-  #req$rook.input$rewind()
-  #df <- read.csv(file)
-  #response <- list(response = df)
-  #response
+#* @get /csv
+function(res) {
+  filename <- "D:/grad/popgene/src/PopGeneApi/6SHpFHq55J_popGene.docx" # replace with the filename of the file you want to serve
+  file <- read_docx(filename)
+  typeof(file)
+  as_attachment(file , filename = "pop.csv")
 }
+
+
+
+# Define a lookup table of MIME types for common file extensions
+mime_types <- list(
+  txt = "text/plain",
+  pdf = "application/pdf",
+  docx = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  xlsx = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
+
+
+#* Return a file as an attachment
+#* @get /download
+function(res) {
+
+ #file <- "D:/grad/popgene/src/PopGeneApi/4Jp5B9ST8B_popGene.csv"
+ #file <- "D:/grad/Gene_Analysis/tutorial-basics.pdf"
+  file <- "D:/grad/popgene/src/PopGeneApi/code_V3.txt"
+  # Set the Content-Type header based on the file extension
+  ext <- tools::file_ext(file)
+  content_type <- ifelse(ext %in% names(mime_types), mime_types[[ext]], "application/octet-stream")
+  
+  
+  fileContent <- as.data.frame(include_file(file, res, content_type = content_type))
+  # Return the file as an attachment
+  as_attachment( fileContent, filename = "filenemae.txt") 
+}
+
+#* Return a file as an attachment
+#* @get /download2
+function(res) {
+  
+  #file_path <- "D:/grad/popgene/src/PopGeneApi/25tYmg5jue_popGene.docx"
+  #file <- "D:/grad/Gene_Analysis/tutorial-basics.pdf"
+  file_path <- "D:/grad/popgene/src/PopGeneApi/code_V3.txt"
+  file_content <- readBin(file_path, "raw", file.info(file_path)$size)
+  
+  # Create a response object with the file content
+  res <- list(
+    body = file_content,
+    headers = c(
+      'Content-Type' = 'text/plain',
+      'Content-Disposition' = sprintf('attachment; filename="%s"', "myfileIsHere")
+    )
+  )
+  
+  
+  # Return the file content as the response
+  return(res)
+}
+
+
 
 
 #* Accept a CSV file through a POST request and write it to the disk

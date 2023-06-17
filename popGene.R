@@ -19,6 +19,7 @@ library(Rook)
 library (plyr)
 library (jsonlite)
 library(stringi)
+library(mime)
 
 
 library(kableExtra)
@@ -41,34 +42,13 @@ cors <- function(res) {
 }
 
 
-#* @serializer csv
-#* @post /csv
-#* @param file:file
-function(file) {
-  file
-  #req$rook.input$rewind()
-  #df <- read.csv(file)
-  #response <- list(response = df)
-  #response
+#* @get  /csv
+function() {
+  filename <- "D:/grad/popgene/src/PopGeneApi/my_list.txt" # replace with the filename of the file you want to serve
+  #return(mime::(filename, delete_file = TRUE, attachment_name = "my_doc.docx"))
 }
 
 
-function(file) {
-  file <- unlist(file)
-  formattedfile <- do.call(rbind, type.convert(strsplit(file, "\n"), as.is = TRUE))
-  mdat <- matrix(formattedfile, byrow = TRUE)
-  formatted_matrix <- do.call(rbind, type.convert(strsplit(mdat, ","), as.is = TRUE))
-  
-  #generate random unique name for the file 
-  randomString <- stri_rand_strings(1 , 10 , pattern = "[A-Za-z0-9]")
-  string1 <- randomString
-  string2 <- "_popGene.csv"
-  fileName <- paste(string1, string2, sep ="")
-  
-  # Write the CSV file to the disk
-  write.csv(formatted_matrix, file.path(getwd(), fileName), row.names = FALSE , col.names = FALSE)
-  file.path(getwd(), fileName)
-}
 #* Accept a CSV file through a POST request and write it to the disk
 #* @param file:file
 #* @post /upload
@@ -170,10 +150,12 @@ function(file) {
   
   
   #generate random unique name for the file 
+  string0 <- "result/"
   string1 <- randomString
   string2 <- "_popGene.docx"
-  fileName <- paste(string1, string2, sep ="")
-  
+  fileName <- paste(string0 , string1, string2, sep ="")
+  if(!file.exists("result"))
+    dir.create("result")
   save_as_docx(`genetic distances table ` = gen_distance , 
                `alle freq table`  = t2 , 
                `alle number table`  = flex_numOfAlle  ,
@@ -181,12 +163,7 @@ function(file) {
                `F Statistic ` = flex_F_statistic,
                `Expected heterozygosity (Hs)` = flex_heterozy,
                path=fileName)
-  
-  string3 <- getwd()
-  string4 <- "/"
-  vec <- cbind(string3, string4 , fileName) # combined vector.
-  pathToFile <- paste(string3, string4 , fileName, sep ="")
-  pathToFile
+  return (fileName )
 }
 
 # Programmatically alter your API
