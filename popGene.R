@@ -42,12 +42,6 @@ cors <- function(res) {
 }
 
 
-#* @get  /csv
-function() {
-  filename <- "D:/grad/popgene/src/PopGeneApi/my_list.txt" # replace with the filename of the file you want to serve
-  #return(mime::(filename, delete_file = TRUE, attachment_name = "my_doc.docx"))
-}
-
 
 #* Accept a CSV file through a POST request and write it to the disk
 #* @param file:file
