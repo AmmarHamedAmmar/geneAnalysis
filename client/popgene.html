@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <form class="btn" id="myform">
+      <input type="file" id="file" />
+      <div class="submit">
+        <button id="btn">Upload</button>
+      </div>
+    </form>
+
+    <a id = "a1" download="file1.docs" >download File </a>
+
+    <script>
+      const Form = document.getElementById("myform");
+      const a1 = document.getElementById("a1");
+      const blob1 = new Blob()
+      const Button = document.getElementById("btn");
+
+      Form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const File = document.getElementById("file").files[0];
+        const formData = new FormData();
+        formData.append('file', File),
+        
+        fetch("../FGaDbh78kv_popGene.csv")
+          .then((res) => res.blob())
+          .then((data) => {
+            fetch(`http://127.0.0.1:8081/${data}`)
+          })
+          .catch((err) => console.log(err));
+      });
+    </script>
+  </body>
+</html>
