@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <form id="myform">
+      <div class="container">
+        <input type="file" id="file" multiple />
+        <label for="file">
+          <i class="fa-solid fa-arrow-up-from-bracket"></i>
+          &nbsp; Choose Files To Upload
+        </label>
+        <div id="num-of-files">No Files Choosen</div>
+        <ul id="files-list"></ul>
+        <div class="btn">
+          <button id="file" type="submit">Upload</button>
+        </div>
+      </div>
+    </form>
+
+    <script src="script.js"></script>
+    <script>
+      const form = document.getElementById("myform");
+      const button = document.getElementById("btn");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const file = document.getElementById("file").files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+
+        fetch("http://127.0.0.1:6434/upload", {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            const responseData = data;
+            console.log(responseData);
+
+            // window.location.href = http://127.0.0.1:8080/geneAnalysis/${responseData}; // Redirects to example.com
+          })
+
+          .catch((err) => {
+            console.log(err);
+          });
+      });
+    </script>
+  </body>
+</html>
