@@ -90,6 +90,7 @@
           .then((data) => {
             const responseData = data;
             console.log(responseData);
+
             hidePopup();
             button.disabled = false;
             window.location.href = `http://127.0.0.1:8080/geneAnalysis/${responseData}`; // Redirects to example.com

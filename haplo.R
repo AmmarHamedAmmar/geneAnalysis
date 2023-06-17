@@ -16,12 +16,8 @@ library(adegenet)
 ls(name="package:haplo.stats")
 help(haplo.em)
 
-if (!require("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-BiocManager::install("trio")
 
 # Read in the genetic data as a haplo.stats "geno" object
-geno <- read_excel("D:/grad/Haploview/GH_Dokki-Mandara.xlsx")
 geno2 <- read_xls("D:/grad/Haploview/Haploview-input_N_Ansari-Pour.xls")
 
 
