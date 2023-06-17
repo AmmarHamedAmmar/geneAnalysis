@@ -41,8 +41,6 @@ cors <- function(res) {
   plumber::forward()
 }
 
-
-
 #* Accept a CSV file through a POST request and write it to the disk
 #* @param file:file
 #* @post /upload
@@ -157,7 +155,7 @@ function(file) {
                `F Statistic ` = flex_F_statistic,
                `Expected heterozygosity (Hs)` = flex_heterozy,
                path=fileName)
-  return (fileName )
+   (fileName)
 }
 
 # Programmatically alter your API
