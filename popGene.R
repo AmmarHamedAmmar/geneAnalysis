@@ -41,8 +41,6 @@ cors <- function(res) {
   plumber::forward()
 }
 
-
-
 #* Accept a CSV file through a POST request and write it to the disk
 #* @param file:file
 #* @post /upload

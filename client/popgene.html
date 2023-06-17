@@ -1,40 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Upload</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <form class="btn" id="myform">
-      <input type="file" id="file" />
-      <div class="submit">
-        <button id="btn">Upload</button>
+    <form id="myform">
+      <div class="container">
+        <input type="file" id="file" multiple />
+        <label for="file">
+          <i class="fa-solid fa-arrow-up-from-bracket"></i>
+          &nbsp; Choose Files To Upload
+        </label>
+        <div id="num-of-files">No Files Choosen</div>
+        <ul id="files-list"></ul>
+        <div class="btn">
+          <button id="file" type="submit">Upload</button>
+        </div>
       </div>
     </form>
 
-    <a id = "a1" download="file1.docs" >download File </a>
-
+    <script src="script.js"></script>
     <script>
-      const Form = document.getElementById("myform");
-      const a1 = document.getElementById("a1");
-      const blob1 = new Blob()
-      const Button = document.getElementById("btn");
+      const form = document.getElementById("myform");
+      const button = document.getElementById("btn");
 
-      Form.addEventListener("submit", (e) => {
+      form.addEventListener("submit", (e) => {
         e.preventDefault();
-        const File = document.getElementById("file").files[0];
+        const file = document.getElementById("file").files[0];
         const formData = new FormData();
-        formData.append('file', File),
-        
-        fetch("../FGaDbh78kv_popGene.csv")
-          .then((res) => res.blob())
+        formData.append("file", file);
+
+        fetch("http://127.0.0.1:6434/upload", {
+          method: "POST",
+          body: formData,
+        })
+          .then((res) => res.json())
           .then((data) => {
-            fetch(`http://127.0.0.1:8081/${data}`)
+            const responseData = data;
+            console.log(responseData);
+
+            // window.location.href = http://127.0.0.1:8080/geneAnalysis/${responseData}; // Redirects to example.com
           })
-          .catch((err) => console.log(err));
+
+          .catch((err) => {
+            console.log(err);
+          });
       });
     </script>
   </body>
