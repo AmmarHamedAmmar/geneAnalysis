@@ -163,7 +163,7 @@ function(file) {
                `F Statistic ` = flex_F_statistic,
                `Expected heterozygosity (Hs)` = flex_heterozy,
                path=fileName)
-  return (fileName )
+   (fileName)
 }
 
 # Programmatically alter your API
