@@ -8,34 +8,28 @@ library(genetics)
 library(openxlsx)
 library(gdata)
 library(genoPlotR)
-
+library(readxl)
 
 
 file_path <- "D:/grad/Haploview/Haploview-input_N_Ansari-Pour.xls"
-excel_data  <- read.xls(file_path, sheet = 1, header = FALSE)
+haplo_Data  <- read_excel("D:/grad/Haploview/Haploview-input_N_Ansari-Pour.xls")
+typeof(haplo_Data$`Sample ID`[1])
 
-g1 <- genotype( c('T/A',    NA, 'T/T',    NA, 'T/A',    NA, 'T/T', 'T/A',
-                  'T/T', 'T/T', 'T/A', 'A/A', 'T/T', 'T/A', 'T/A', 'T/T',
-                  NA, 'T/A', 'T/A',   NA) )
-
-g2 <- genotype( c('C/A', 'C/A', 'C/C', 'C/A', 'C/C', 'C/A', 'C/A', 'C/A',
-                  'C/A', 'C/C', 'C/A', 'A/A', 'C/A', 'A/A', 'C/A', 'C/C',
-                  'C/A', 'C/A', 'C/A', 'A/A') )
+fromatted_haplo <- haplo_Data[ , 3:ncol(haplo_Data)]
 
 
-g3 <- genotype( c('T/A', 'T/A', 'T/T', 'T/A', 'T/T', 'T/A', 'T/A', 'T/A',
-                  'T/A', 'T/T', 'T/A', 'T/T', 'T/A', 'T/A', 'T/A', 'T/T',
-                  'T/A', 'T/A', 'T/A', 'T/T') )
+geno1 <- genotype(fromatted_haplo$`1114` , sep = "")
+geno2 <- genotype(fromatted_haplo$`1198` , sep = "")
+geno3 <- genotype(fromatted_haplo$`1906` , sep = "")
+geno4 <- genotype(fromatted_haplo$`2102` , sep = "")
 
 
-dfGs <- data.frame(g1,g2,g3)
-data <- makeGenotypes(data.frame(g1,g2,g3))
 
-# Compute & display  LD for one marker pair
-ld <- LD(g1,g2)
+haploGenoData <- makeGenotypes(data.frame(geno1 , geno2 , geno3 , geno4))
 
-# Compute LD table for all 3 genotypes
-ldt <- LD(data)
+newldt <- LD( haploGenoData )
+LDtable(newldt)
+LDplot(newldt, distance=c(1114, 1198, 1906 , 2102))
 
 # display the results
 
@@ -48,8 +42,8 @@ fileName <- paste(string1, string2, sep ="")
 # start visualizing  and store this result in pdf 
 pdf(fileName)
 
-LDtable(ldt)                            # graphical color-coded table
-LDplot(ldt, distance=c(124, 834, 927))  # LD plot vs distance
+LDtable(newldt)                            # graphical color-coded table
+LDplot(newldt, distance=c(1114, 1198, 1906 , 2102))  # LD plot vs distance
 
 
 
@@ -62,22 +56,22 @@ a1 <- a2 <- matrix("", nrow=nobs, ncol=ngene)
 for(i in 1:length(s) )
 {
   
-  rallele <- function(p) sample( c("A","T"), 1, p=c(p, 1-p))
+  rallele <- function(p) sample( c("T","G"), 1, p=c(p, 1-p))
   
   if(i==1)
   {
-    a1[,i] <- sample( c("A","T"), 1000, p=c(0.5,0.5), replace=TRUE)
-    a2[,i] <- sample( c("A","T"), 1000, p=c(0.5,0.5), replace=TRUE)
+    a1[,i] <- sample( c("T","G"), 1000, p=c(0.5,0.5), replace=TRUE)
+    a2[,i] <- sample( c("T","G"), 1000, p=c(0.5,0.5), replace=TRUE)
   }
   else
   {
-    p1 <- pmax( pmin( 0.25 + s[i] * as.numeric(a1[,i-1]=="A"),1 ), 0 )
-    p2 <- pmax( pmin( 0.25 + s[i] * as.numeric(a2[,i-1]=="A"),1 ), 0 )
+    p1 <- pmax( pmin( 0.25 + s[i] * as.numeric(a1[,i-1]=="T"),1 ), 0 )
+    p2 <- pmax( pmin( 0.25 + s[i] * as.numeric(a2[,i-1]=="T"),1 ), 0 )
     a1[,i] <- sapply(p1, rallele )
     a2[,i] <- sapply(p2, rallele )
   }
   
-  data[[paste("G",i,sep="")]] <- genotype(a1[,i],a2[,i])
+  data[[paste("C",i,sep="")]] <- genotype(a1[,i],a2[,i])
 }
 data <- data.frame(data)
 data <- makeGenotypes(data)
@@ -91,14 +85,14 @@ parent_Title = "Pairwise LD -----------"
 
 
 title1 = "LD Test : "
-N =  paste0("N is : " , unlist(ld$n))
-P_value = paste0("P-value is : " , unlist(ld$`P-value`))
-X_2 = paste0("X^2 is : " , unlist(ld$`X^2`))
+N =  paste0("N is : " , unlist(ldt$n))
+P_value = paste0("P-value is : " , unlist(ldt$`P-value`))
+X_2 = paste0("X^2 is : " , unlist(ldt$`X^2`))
 
 
 title2 = "Estimates : "
-D1 = paste0("D` is : " , unlist(ld$`D'`))
-D2 =paste0("D is : " , unlist(ld$D))
+D1 = paste0("D` is : " , unlist(ldt$`D'`))
+D2 =paste0("D is : " , unlist(ldt$D))
 
 plot(NA, xlim=c(0,9), ylim=c(0,9), bty='n',
      xaxt='n', yaxt='n', xlab='', ylab='')
